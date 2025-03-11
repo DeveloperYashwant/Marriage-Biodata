@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marriage Biodata</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+
+    <div id="biodata" class="max-w-3xl mx-auto bg-white p-6 shadow-lg rounded-lg border border-gray-300">
+        <h2 class="text-center text-2xl font-semibold bg-blue-600 text-white py-3 rounded-md">Marriage Biodata</h2>
+
+        <!-- Profile Picture -->
+        <div class="text-center my-4">
+            <img id="profilePic" class="w-32 h-32 mx-auto rounded-full border-4 border-blue-600 object-cover" src="https://via.placeholder.com/130" alt="Profile Picture">
+            <input type="file" id="imageUpload" class="hidden" accept="image/*">
+            <label for="imageUpload" class="inline-block bg-blue-600 text-white px-4 py-2 mt-2 rounded-md cursor-pointer">Upload Photo</label>
+        </div>
+
+        <!-- Personal Details -->
+        <h2 class="section-title">Personal Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-2"><strong>Full Name:</strong> <input type="text" id="fullName" class="input-field"></div>
+            <div class="p-2"><strong>Date of Birth:</strong> <input type="date" id="dob" class="input-field"></div>
+            <div class="p-2"><strong>Age:</strong> <input type="text" id="age" class="input-field"></div>
+            <div class="p-2"><strong>Height:</strong> <input type="text" id="height" class="input-field"></div>
+            <div class="p-2"><strong>Weight:</strong> <input type="text" id="weight" class="input-field"></div>
+            <div class="p-2"><strong>Blood Group:</strong> <input type="text" id="bloodGroup" class="input-field"></div>
+            <div class="p-2"><strong>Religion & Caste:</strong> <input type="text" id="religion" class="input-field"></div>
+            <div class="p-2"><strong>Mother Tongue:</strong> <input type="text" id="motherTongue" class="input-field"></div>
+            <div class="p-2"><strong>Address:</strong> <textarea id="address" class="input-field"></textarea></div>
+        </div>
+
+        <!-- Family Details -->
+        <h2 class="section-title">Family Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-2"><strong>Father's Name:</strong> <input type="text" id="fatherName" class="input-field"></div>
+            <div class="p-2"><strong>Mother's Name:</strong> <input type="text" id="motherName" class="input-field"></div>
+            <div class="p-2"><strong>Siblings:</strong> <input type="text" id="siblings" class="input-field"></div>
+        </div>
+
+        <!-- Educational & Professional Details -->
+        <h2 class="section-title">Education & Profession</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-2"><strong>Qualification:</strong> <input type="text" id="qualification" class="input-field"></div>
+            <div class="p-2"><strong>Occupation:</strong> <input type="text" id="occupation" class="input-field"></div>
+            <div class="p-2"><strong>Company:</strong> <input type="text" id="company" class="input-field"></div>
+        </div>
+
+        <!-- Hobbies & Preferences -->
+        <h2 class="section-title">Hobbies & Preferences</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-2"><strong>Hobbies:</strong> <input type="text" id="hobbies" class="input-field"></div>
+            <div class="p-2"><strong>Partner Preferences:</strong> <textarea id="preferences" class="input-field"></textarea></div>
+        </div>
+
+        <!-- Contact Details -->
+        <h2 class="section-title">Contact Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="p-2"><strong>Phone Number:</strong> <input type="text" id="phone" class="input-field"></div>
+            <div class="p-2"><strong>Email:</strong> <input type="email" id="email" class="input-field"></div>
+        </div>
+    </div>
+
+    <!-- Download PDF Button -->
+    <div class="text-center mt-6">
+        <button class="bg-blue-600 text-white px-6 py-3 rounded-md text-lg shadow-md" onclick="downloadPDF()">Download PDF</button>
+    </div>
+
+    <script>
+        function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "mm", "a4");
+
+            // Hide upload elements before capturing the screenshot
+            document.getElementById("imageUpload").style.display = "none";
+            document.querySelector("label[for='imageUpload']").style.display = "none";
+
+            // Replace input fields with text before capturing the PDF
+            document.querySelectorAll(".input-field").forEach(input => {
+                const value = input.value;
+                const parentDiv = input.parentElement;
+                parentDiv.innerHTML = `<strong>${parentDiv.innerHTML.split(":")[0]}:</strong> ${value}`;
+            });
+
+            html2canvas(document.getElementById("biodata"), {
+                scale: 2,
+                useCORS: true
+            }).then((canvas) => {
+                const imgData = canvas.toDataURL("image/jpeg", 1.0);
+                pdf.addImage(imgData, "JPEG", 10, 10, 190, 0);
+                pdf.save("Marriage_Biodata.pdf");
+
+                // Restore input fields after capturing the screenshot
+                restoreInputFields();
+            });
+        }
+
+        function restoreInputFields() {
+            document.querySelectorAll(".input-field").forEach(input => {
+                const parentDiv = input.parentElement;
+                const labelText = parentDiv.innerHTML.split(":")[0];
+                const value = parentDiv.textContent.split(":")[1]?.trim() || "";
+                parentDiv.innerHTML = `<strong>${labelText}:</strong> <input type="text" class="input-field" value="${value}">`;
+            });
+
+            document.getElementById("imageUpload").style.display = "block";
+            document.querySelector("label[for='imageUpload']").style.display = "inline-block";
+        }
+
+        // Profile Picture Upload
+        document.getElementById('imageUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('profilePic').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+
+    <style>
+        .input-field {
+            width: 100%;
+            border: 1px solid gray;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            text-align: center;
+            background: #2563eb;
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+    </style>
+
+</body>
+</html>
